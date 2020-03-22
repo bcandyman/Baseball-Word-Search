@@ -1,13 +1,22 @@
 // ---Global Variables---
 
 // copy of all teams data
-const copiedMlbData = { ...mlb_data };
+const teams = { ...mlb_data };
 // active team
-let selectedTeam = {};
-// active team name
-let selectedTeamName = [];
+let activeTeam = {};
+// active team name array. Minus spaces
+let arrActiveTeamName = [];
 // guesses a user has to begin each round
 let guessesRemaining = 0;
+// guesses per round
+let guessLimit = 8;
+// characters guessed incorrectly on each round of play
+let incorrectCharGuesses = [];
+// characters guessed correctly on each round of play
+let correctCharGuesses = [];
+// transition duration, used for fade animation
+const transDuration = 500
+
 
 
 // ---Functions---
@@ -15,49 +24,76 @@ let guessesRemaining = 0;
 // returns random number >= min and < max
 const getRandNum = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
+
 // deletes a property from an object
 const deleteObjProp = (obj, property) => delete obj[property];
 
-// returns a random property from a given object.
-// returned property will be deleted from given object.
-const selectRandomProp = (obj) => {
-  const randIndex = getRandNum(0, Object.keys(obj).length);
-  const selectedKey = Object.keys(obj)[randIndex];
-  selectedProperty = obj[selectedKey];
-  deleteObjProp(obj, selectedKey);
-  return selectedProperty;
-};
-
 
 // removes duplicates from a given array
-const removeDuplicateVals = (arr) => {
-  return arr.filter((val, index) => arr.indexOf(val) === index);
-};
+const removeArrDups = (arr) => arr.filter((val, index) => arr.indexOf(val) === index);
 
 
-// initialize the game to start and after guessing each team
-const initTeamName = (selectedTeam) => {
-  selectedTeamName = selectedTeam.name
-    .replace(' ', '')
-    .split('')
-    .map(val => {
-      $('#root-name').append($('<div>')
-        .attr('data-letter', val)
-        .attr('data-letter-lower', val.toLowerCase())
-        .addClass('letter'));
-      return val.toLowerCase();
-    });
-
-  selectedTeamName = removeDuplicateVals(selectedTeamName);
+// restart the game
+const restart = () => {
+  $('#team-logo').fadeIn(transDuration, () => {
+    setTimeout(() => {
+      $.when($('#team-logo, #root-name, #hint-wrapper').fadeOut(transDuration))
+        .done(() => initGame());
+    }, 2000);
+  });
 };
 
 
 // initialize game
 const initGame = () => {
-  guessesRemaining = 8;
+
+  // reset global variables
+  guessesRemaining = guessLimit;
+  correctCharGuesses = [];
+  incorrectCharGuesses = [];
+
+  // clear root-name div in preparation of next round
   $('#root-name').empty();
-  selectedTeam = selectRandomProp(copiedMlbData);
-  initTeamName(selectedTeam);
+
+  // select random key index from remaining teams object
+  const randIndex = getRandNum(0, Object.keys(teams).length);
+  // set key from teams object using random index
+  const strActiveTeamName = Object.keys(teams)[randIndex];
+  // set selected team object as active team
+  activeTeam = teams[strActiveTeamName];
+  // remove active team from teams object to prevent reselection
+  deleteObjProp(teams, strActiveTeamName);
+
+  // create an array containing all character to make up the active team's name
+  // create and append divs to #root-name div 
+  arrActiveTeamName = strActiveTeamName
+    .split('')
+    .filter(val => {
+      const newDiv = $('<div>')
+        .attr('data-letter', val)
+        .attr('data-letter-lower', val.toLowerCase())
+        .addClass('letter');
+
+      $('#root-name').append(newDiv)
+
+      if (val !== '_') {
+        newDiv.addClass('z-depth-3')
+        return val;
+      }
+    }).map((letter)=>letter.toLowerCase());
+
+  // set src attribute for logo
+  $('#team-logo').attr('src', activeTeam.logo_url).hide();
+  // display remaining guesses
+  $('#remaining-guesses').text(guessesRemaining)
+  // clear all letters from previous round
+  $('#characters-guessed').empty()
+  // populate hint
+  $('#hint').text(activeTeam.location)
+
+  // remove duplicate from array
+  arrActiveTeamName = removeArrDups(arrActiveTeamName);
+  $('#root-name').fadeIn(transDuration)
 };
 
 
@@ -65,42 +101,67 @@ const initGame = () => {
 
 // event listener for on keypress. Used to capture keys the user guesses.
 $(document).on('keypress', e => {
+  // console.log(arrActiveTeamName);
 
   // if guessed letter has not been guessed previously and is in team name.
-  if (selectedTeamName.includes(e.key.toLowerCase())) {
+  if (arrActiveTeamName.includes(e.key.toLowerCase())) {
 
     // loop through each letter div in the DOM and test if it should be the guessed letter.
     $('#root-name > div').each(function(index, val) {
-      if ($(this).attr('data-letter-lower') === e.key.toLowerCase() && selectedTeamName.includes(e.key.toLowerCase())) {
+      // console.log($(this).attr('data-letter-lower'));
+
+      if ($(this).attr('data-letter-lower') === e.key.toLowerCase() && arrActiveTeamName.includes(e.key.toLowerCase())) {
         // print the letter to the div
         $(this).text($(this).attr('data-letter'))
-        // remove the letter guessed from the array of remaining letters to guess
-        const deleteIndex = selectedTeamName.indexOf(e.key.toLowerCase());
-        selectedTeamName.splice(deleteIndex, 1);
       }
     });
 
+    // remove the letter guessed from the array of remaining letters to guess
+    const deleteIndex = arrActiveTeamName.indexOf(e.key.toLowerCase());
+    arrActiveTeamName.splice(deleteIndex, 1);
+
+    // update correctCharGuesses
+    correctCharGuesses.push(e.key.toLowerCase())
+
     // if all letters have been guessed the user has won!
-    if (selectedTeamName.length === 0) {
-      initGame()
-    }
+    if (arrActiveTeamName.length === 0) {
+      console.log("you're a winner!!");
+      restart()
+    };
   }
   // if guessed letter has been guessed or is not in the team name
   else {
 
-    console.log('No Go!!');
-    guessesRemaining--
-    if (guessesRemaining < 0) {
-      console.log('GAME OVER!!');
-      initGame()
+    // if letter has been guessed previously
+    if (incorrectCharGuesses.includes(e.key.toLowerCase()) || correctCharGuesses.includes(e.key.toLowerCase())) {
+
     }
+    // if this was the last guess available
+    else if (guessesRemaining <= 0) {
+      // game over, restart the game
+      restart()
+    }
+    // else this guess was legit but incorrect
     else {
-      console.log(guessesRemaining);
+      guessesRemaining--
+
+      // if user is half-way through available guesses, display a hint
+      if (guessesRemaining < guessLimit * .5) {
+        console.log('gettin low');
+
+        $('#hint-wrapper').fadeIn('slow');
+      };
+
+      // push guessed letter to capture which letters have been guessed
+      incorrectCharGuesses.push(e.key.toLowerCase());
+      // update guessed characters on display
+      $('#characters-guessed').text(incorrectCharGuesses.join(', ').toUpperCase())
+      // update remaining guesses on display
+      $('#remaining-guesses').text(guessesRemaining)
     }
   };
 });
 
 
-// Game Initialization
-
+// Game Initialization on startup
 initGame();
