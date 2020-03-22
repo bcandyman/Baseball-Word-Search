@@ -1,7 +1,7 @@
 // ---Global Variables---
 
-// copy of all teams data
-const teams = { ...mlb_data };
+// initialize object to contains all team data
+let teams = {};
 // active team
 let activeTeam = {};
 // active team name array. Minus spaces
@@ -52,6 +52,12 @@ const initGame = () => {
   correctCharGuesses = [];
   incorrectCharGuesses = [];
 
+  // replenish team object if empty
+  // this would be on the first round of the game or once the user has guessed every team in the league
+  if (Object.keys(teams).length === 0) {
+    teams = { ...mlb_data };
+  }
+
   // clear root-name div in preparation of next round
   $('#root-name').empty();
 
@@ -80,7 +86,7 @@ const initGame = () => {
         newDiv.addClass('z-depth-3')
         return val;
       }
-    }).map((letter)=>letter.toLowerCase());
+    }).map((letter) => letter.toLowerCase());
 
   // set src attribute for logo
   $('#team-logo').attr('src', activeTeam.logo_url).hide();
