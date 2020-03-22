@@ -1,7 +1,96 @@
+body{
+  background-image: url('http://getwallpapers.com/wallpaper/full/c/1/4/899888-most-popular-baseball-backgrounds-1920x1200-samsung.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-family: 'Roboto', sans-serif;
+}
+
+#hint-wrapper{
+  padding-top: 10px;
+  left: 0;
+  right: 0;
+  margin-left:  auto;
+  margin-right:  auto;
+  position: absolute;
+  display: none;
+}
+
+#remaining-guesses, #characters-guessed{
+  font-style: italic;
+  font-size: 1.5em;
+}
+
+#team-logo{
+  display: block ;
+  width: 200px;
+  left: 0;
+  right: 0;
+  margin-left:  auto;
+  margin-right:  auto;
+  bottom: 0px;
+  position: absolute;
+}
+
+.container{
+  background-color: #fff;
+  border-left: solid 4px #56CBF9;
+  border-right: solid 4px #56CBF9;
+  border-radius: 8px;
+  margin: 30px  auto;
+}
+
+.container2{
+  border-left: solid 4px #F18F01;
+  border-right: solid 4px #F18F01;
+  padding-bottom: 30px;
+  position: relative;
+}
+
+.game-stats-wrapper{
+  position: relative;
+}
+
+.header{
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px -1px #C6BFB3;
+  padding-bottom: 5px;
+}
+
+.instructions{
+  line-height: 1.5em;
+  padding: 10px 10px;
+  text-indent: .5em;
+}
+
 .letter{
-  border: solid black 1px;
+  border: solid #D3D0CB 1px;
   border-radius: 3px;
   display: inline-block;
+  font-size: x-large;
+  padding-top: 8px;
+  vertical-align: middle;
   height: 40px;
+  margin: 0 2px;
   width: 40px;
+}
+
+.letter[data-letter="_"]{
+  border: none;
+  width: 25px;
+}
+
+.letter-wrapper{
+  text-align: center;
+}
+
+.letter:not([data-letter="_"]){
+  background-color: #fff;
+}
+
+.results-wrapper{
+  display: inline-block;
+}
+
+.text-center{
+  text-align: center;
 }
