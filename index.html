@@ -5,6 +5,10 @@
 
   <!-- Reset -->
   <link rel="stylesheet" href="./assets/css/reset.css">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Import Google Font -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <!-- Custom styling -->
@@ -16,18 +20,57 @@
 </head>
 
 <body>
-<h1>HELP</h1>
-  <div class="row" id="root-name">
-    
+  <div class="container z-depth-5">
+    <div class="container2">
+      <div class="header">
+        <h1 class="text-center header-title">Guess the Team!</h1>
+        <div class="row">
+          <div class="col s12">
+            <p class="instructions">Press letter keys on the keyboard to choose a letter. If the chosen letter is in the team name, it will
+              be displayed to help you determine the name of the team. In the event that half of the guesses are used, a
+              hint will be displayed to help determine the team name.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="row game-stats-wrapper">
+        <div class="col s6 text-center">
+          <div class="remaining-guesses">
+            <div class="results-wrapper">
+              <h6>Guesses Remaining</h6>
+              <hr>
+              <span id='remaining-guesses'></span>
+              <img id="team-logo" class='z-depth-4' src="" alt="team-logo">
+            </div>
+          </div>
+        </div>
+        <div class="col s6 text-center">
+          <div class="characters-guessed">
+            <div class="results-wrapper">
+              <h6>Guessed Letters</h6>
+              <hr>
+              <span id='characters-guessed'></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin: auto;">
+        <div class="col s12">
+          <div class="letter-wrapper" id="root-name"></div>
+        </div>
+      </div>
+      <div id="hint-wrapper">
+        <p class="text-center">Hint: <span id='hint'><span></p>
+      </div>
+    </div>
   </div>
+
 
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <!-- jQuery -->
-  <script
-  src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-  integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
-  crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
   <script src="./data/baseball_team_data.js"></script>
   <script src="./assets/js/app.js"></script>
 
