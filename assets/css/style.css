@@ -1,0 +1,7 @@
+.letter{
+  border: solid black 1px;
+  border-radius: 3px;
+  display: inline-block;
+  height: 40px;
+  width: 40px;
+}
