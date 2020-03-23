@@ -107,65 +107,66 @@ const initGame = () => {
 
 // event listener for on keypress. Used to capture keys the user guesses.
 $(document).on('keypress', e => {
-  // console.log(arrActiveTeamName);
+  // record keyCode of lower case version of key pressed
+  const keyCode = e.key.toLowerCase().charCodeAt(0);
 
-  // if guessed letter has not been guessed previously and is in team name.
-  if (arrActiveTeamName.includes(e.key.toLowerCase())) {
+  // If key pressed was a through z
+  if ((e.key.length === 1) && (keyCode >= 97 && keyCode <= 122)) {
 
-    // loop through each letter div in the DOM and test if it should be the guessed letter.
-    $('#root-name > div').each(function(index, val) {
-      // console.log($(this).attr('data-letter-lower'));
+    // if guessed letter has not been guessed previously and is in team name.
+    if (arrActiveTeamName.includes(e.key.toLowerCase())) {
 
-      if ($(this).attr('data-letter-lower') === e.key.toLowerCase() && arrActiveTeamName.includes(e.key.toLowerCase())) {
-        // print the letter to the div
-        $(this).text($(this).attr('data-letter'))
+      // loop through each letter div in the DOM and test if it should be the guessed letter.
+      $('#root-name > div').each(function(index, val) {
+
+        if ($(this).attr('data-letter-lower') === e.key.toLowerCase() && arrActiveTeamName.includes(e.key.toLowerCase())) {
+          // print the letter to the div
+          $(this).text($(this).attr('data-letter'))
+        }
+      });
+
+      // remove the letter guessed from the array of remaining letters to guess
+      const deleteIndex = arrActiveTeamName.indexOf(e.key.toLowerCase());
+      arrActiveTeamName.splice(deleteIndex, 1);
+
+      // update correctCharGuesses
+      correctCharGuesses.push(e.key.toLowerCase())
+
+      // if all letters have been guessed the user has won!
+      if (arrActiveTeamName.length === 0) {
+        restart()
+      };
+    }
+    // if guessed letter has been guessed or is not in the team name
+    else {
+
+      // if letter has been guessed previously
+      if (incorrectCharGuesses.includes(e.key.toLowerCase()) || correctCharGuesses.includes(e.key.toLowerCase())) {
+
       }
-    });
+      // if this was the last guess available
+      else if (guessesRemaining <= 0) {
+        // game over, restart the game
+        restart()
+      }
+      // else this guess was legit but incorrect
+      else {
+        guessesRemaining--
 
-    // remove the letter guessed from the array of remaining letters to guess
-    const deleteIndex = arrActiveTeamName.indexOf(e.key.toLowerCase());
-    arrActiveTeamName.splice(deleteIndex, 1);
+        // if user is half-way through available guesses, display a hint
+        if (guessesRemaining < guessLimit * .5) {
+          $('#hint-wrapper').fadeIn('slow');
+        };
 
-    // update correctCharGuesses
-    correctCharGuesses.push(e.key.toLowerCase())
-
-    // if all letters have been guessed the user has won!
-    if (arrActiveTeamName.length === 0) {
-      console.log("you're a winner!!");
-      restart()
+        // push guessed letter to capture which letters have been guessed
+        incorrectCharGuesses.push(e.key.toLowerCase());
+        // update guessed characters on display
+        $('#characters-guessed').text(incorrectCharGuesses.join(', ').toUpperCase())
+        // update remaining guesses on display
+        $('#remaining-guesses').text(guessesRemaining)
+      }
     };
   }
-  // if guessed letter has been guessed or is not in the team name
-  else {
-
-    // if letter has been guessed previously
-    if (incorrectCharGuesses.includes(e.key.toLowerCase()) || correctCharGuesses.includes(e.key.toLowerCase())) {
-
-    }
-    // if this was the last guess available
-    else if (guessesRemaining <= 0) {
-      // game over, restart the game
-      restart()
-    }
-    // else this guess was legit but incorrect
-    else {
-      guessesRemaining--
-
-      // if user is half-way through available guesses, display a hint
-      if (guessesRemaining < guessLimit * .5) {
-        console.log('gettin low');
-
-        $('#hint-wrapper').fadeIn('slow');
-      };
-
-      // push guessed letter to capture which letters have been guessed
-      incorrectCharGuesses.push(e.key.toLowerCase());
-      // update guessed characters on display
-      $('#characters-guessed').text(incorrectCharGuesses.join(', ').toUpperCase())
-      // update remaining guesses on display
-      $('#remaining-guesses').text(guessesRemaining)
-    }
-  };
 });
 
 
